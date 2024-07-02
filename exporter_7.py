@@ -19,7 +19,7 @@ try:
     # Split scene name from directory and store them in separate variables
     scenePath, sceneName = rawPath.rsplit('/', 1)
 except:
-    print "It helps to give your scene a name."
+    print("Must save your scene first!")
     scenePath = cmds.internalVar(userWorkspaceDir=True)
     sceneName = 'Unknown'
 
@@ -37,7 +37,7 @@ def getAttribute(scrollListName, objects=None):
     allObjects = cmds.ls()
     # To get the attribute of just the specified object
     if objects:
-        print "Getting attributes from specific object(s)"
+        print("Getting attributes from specific object(s)")
         # Use function arg input instead of cmds.ls()
         allObjects = objects
 
@@ -53,7 +53,7 @@ def getAttribute(scrollListName, objects=None):
                     # try to evaluate data from attribute
                     attrData = eval(rawString)
                 except:
-                    print "No data found in attribute."
+                    print("No data found in attribute.")
                     attrData = []
                 # returns both the object where data is stored, its attribute name, and the data itself in that order
                 return objName, attrName, attrData
@@ -67,7 +67,7 @@ def getAttribute(scrollListName, objects=None):
                     mObjNames.append(objName)
                     mAttrData.append( eval(rawString) )
                 except:
-                    print "No data found in attribute."
+                    print("No data found in attribute.")
                     mAttrData.append(None)
                     
     # Return data outside the loop, so it can process everything
@@ -82,7 +82,7 @@ def setAttribute(scrollListName, attrName='', data='', mode=''):
     # need to make sure there's an object set to store data
     if mode == 'SetData':
         for attr in data:
-            print attr
+            print(attr)
             try:
                 # Make sure attr is unlocked before edit:
                 cmds.setAttr(attrName, edit=True, lock=False)
@@ -93,14 +93,14 @@ def setAttribute(scrollListName, attrName='', data='', mode=''):
                 # Add new anim name to textScrollList
                 updateTextList(scrollListName, mode='RefreshAll')
             except:
-                print "Error adding attribute to object"
+                print("Error adding attribute to object")
     
     if mode == 'PickDataObject':
         objName = cmds.ls(sl=True)[0]
         # check if attribute exists, if not, initialize it
         if not cmds.attributeQuery( scrollListName, node=objName, exists=True):
             attrName = objName+'.'+scrollListName
-            print "Attribute does not exist, adding to:", objName, 'as', scrollListName
+            print("Attribute does not exist, adding to:", objName, 'as', scrollListName)
             cmds.addAttr(objName, longName=scrollListName, dataType='string')
             # update button text to reflect what object is being used to store data
             cmds.button('selectControl', edit=True, label='Data Node: %s' %objName)
@@ -164,18 +164,18 @@ def editAttribute(scrollListName, mode='', newItem=None):
             deleteAttribute(scrollListName)
 
     if scrollListName == 'textureList':
-        print "Texture list stuff goes here"
+        print("Texture list stuff goes here")
         if mode == 'Add':
-            print "Add material to list"
+            print("Add material to list")
             mat = cmds.ls(sl=True)[0]
             cmds.swatchDisplayPort(scrollListName, edit=True, shadingNode=mat, borderWidth=2)
         if mode == 'Delete':
-            print "Deleting material from list"
+            print("Deleting material from list")
 
 
 def deleteAttribute(scrollListName):
     objects = cmds.textScrollList(scrollListName, q=True, si=True)
-    print objects
+    print(objects)
     for object in objects:
         attrName = object+'.'+scrollListName
         # Unlock attribute, so it can be deleted
@@ -197,7 +197,7 @@ def selectObject(scrollListName, object='', mode=''):
             dataObject = getAttribute(scrollListName)[0]
             cmds.select(dataObject)
         except:
-            print "DIDNT WORK"
+            print("DIDNT WORK")
 
 
 def updateTextList(scrollListName, mode='', newItem='', oldItem='', range=None):
@@ -210,7 +210,7 @@ def updateTextList(scrollListName, mode='', newItem='', oldItem='', range=None):
             try:
                 cmds.textScrollList(scrollListName, edit=True, append=attrData[0])
             except:
-                print "No data in attribute: %s" %attrName
+                print("No data in attribute: %s" %attrName)
             cmds.button('selectControl', edit=True, label="Data Node: %s" %dataObject)
             
         if scrollListName == 'modelList':
@@ -222,7 +222,7 @@ def updateTextList(scrollListName, mode='', newItem='', oldItem='', range=None):
                 try:
                     cmds.textScrollList(scrollListName, edit=True, append=objName)
                 except:
-                    print "No data in attribute: %s" %mAttrNames[index]
+                    print("No data in attribute: %s" %mAttrNames[index])
 
 
 def updateTextFields(scrollListName, mode='', field='', browsing=False, newDirectory='', aRangeMin=0.0, aRangeMax=0.0):
@@ -266,7 +266,7 @@ def updateTextFields(scrollListName, mode='', field='', browsing=False, newDirec
             if field == 'animFrameField':
                 # Consider making frame edits actually move keyframes around
                 aNewRange = cmds.intFieldGrp('animFrameField', query=True, value=True)
-                print aNewRange, aName
+                print(aNewRange, aName)
                 for index, aData in enumerate(attrData):
                     if aData[0] == aName:
                         attrData[index][1] = aNewRange
@@ -375,7 +375,7 @@ def makeTextList( scrollListName, description='' ):
             doubleClickCommand=lambda *args:selectObject( scrollListName ),
             deleteKeyCommand=lambda *args:editAttribute( scrollListName, mode='Delete' ),
             selectCommand=lambda *args:updateTextFields( scrollListName, mode='Select' ),
-            bgc=[0.0,0.3,0.0],
+            bgc=[0.0,0.1,0.0],
             annotation="Double click to select object"
         )
     # For textures
@@ -396,7 +396,7 @@ def makeDropDown( scrollListName ):
 
 def getExportDir( scrollListName ):
     fPath = cmds.fileDialog2(dialogStyle=2, fileMode=2, caption="Select directoy to export to" )[0]
-    print fPath
+    print(fPath)
     updateTextFields(scrollListName, mode='EditFilePath', browsing=True, newDirectory=fPath)
     
     
@@ -522,7 +522,7 @@ def mkToolsUI():
             name.append(i.split('.')[0])
             component.append(i.split('.')[1])
         vertsInObj = cmds.polyEvaluate(v=True) # Get's number of verts in object
-        print vertsInObj
+        print(vertsInObj)
         # Divides edges and querries number of divisions, querried result is a float apparently, which doesn't make sense to me
         
         subEdge = cmds.polySubdivideEdge(n='Subdivide Edges (evenly)', dv = SUBDIVS, ch=True)
@@ -532,8 +532,8 @@ def mkToolsUI():
         # Connects the verticies
         for i in range(divisions * (len(component) - 1)): # Calculates how many times to loop in order to connect all verts. This number = number of new edges created
             cmds.polyConnectComponents( name[0]+'.vtx['+str(vert1)+']', name[0]+'.vtx['+str(vert2)+']', n='Subdivide Edges (evenly)', name="spgay" , ch=True, cch=False )
-            print vert1
-            print vert2
+            print(vert1)
+            print(vert2)
             vert1 += 1
             vert2 += 1
     
@@ -553,7 +553,7 @@ def mkToolsUI():
 
 def exportInit(scrollListName, exportMode=''):
     '''This function is needed... for a reason I can't rememeber! But I made a thread about it on CGSociety'''
-    print exportMode
+    print(exportMode)
     # Get selected objects
     selectedObjects = cmds.textScrollList(scrollListName, query=True, selectItem=True)
     # Pass selected objects to get their attr data, and thus their current export directories
@@ -597,10 +597,10 @@ def exportStuff(scrollListName, objects=None, objectAttributes=None):
             cmds.select(obj)
             # Apprently maya doesn't just let you use the file command to export FBX. Oh well. 
             if fileType == 'FBX':
-                print "Exporting as" , fileType
+                print("Exporting as" , fileType)
                 mel.eval('FBXExport -f "' + objectAttributes[index][0] + '/' + obj + '.' + fileType + '" -s')
             else:
-                print "Exporting as, not FBX", fileType
+                print("Exporting as, not FBX", fileType)
                 cmds.file(rename=obj)
                 cmds.file(force=True, exportSelected=True, type=fileType)
                 cmds.file(rename=sceneName)
