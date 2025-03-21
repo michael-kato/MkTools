@@ -625,4 +625,3 @@ def exportStuff(scrollListName, objects=None, objectAttributes=None):
 
 
 mkToolsUI()
-
